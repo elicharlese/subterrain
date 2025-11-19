@@ -17,8 +17,20 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { usePlaylists } from "@/contexts/playlist-context"
 
+const parseDurationToSeconds = (duration: string): number => {
+  const [minutesStr, secondsStr] = duration.split(":")
+  const minutes = Number(minutesStr)
+  const seconds = Number(secondsStr)
+
+  if (Number.isNaN(minutes) || Number.isNaN(seconds)) {
+    return 0
+  }
+
+  return minutes * 60 + seconds
+}
+
 interface LibraryListProps {
-  tracks: {
+  tracks?: {
     id: number
     title: string
     artist: string
@@ -30,12 +42,12 @@ interface LibraryListProps {
     genre: string
     isVerified: boolean
   }[]
-  currentlyPlayingId: number | null
-  onPlayToggle: (id: number) => void
+  currentlyPlayingId?: number | null
+  onPlayToggle?: (id: number) => void
   showAlbumOnly?: boolean
 }
 
-export function LibraryList({ tracks, currentlyPlayingId, onPlayToggle, showAlbumOnly = false }: LibraryListProps) {
+export function LibraryList({ tracks = [], currentlyPlayingId = null, onPlayToggle, showAlbumOnly = false }: LibraryListProps) {
   const [likedTracks, setLikedTracks] = useState<number[]>([])
   const { playlists, addTrackToPlaylist } = usePlaylists()
 
@@ -49,12 +61,14 @@ export function LibraryList({ tracks, currentlyPlayingId, onPlayToggle, showAlbu
 
   const handleAddToPlaylist = (playlistId: string, track: any) => {
     addTrackToPlaylist(playlistId, {
-      id: track.id,
+      id: String(track.id),
       title: track.title,
       artist: track.artist,
-      image: track.image,
-      duration: track.duration,
+      duration: parseDurationToSeconds(track.duration),
       audioUrl: track.audioUrl,
+      provider: "apple",
+      providerId: String(track.id),
+      coverImage: track.image,
     })
   }
 
@@ -88,7 +102,7 @@ export function LibraryList({ tracks, currentlyPlayingId, onPlayToggle, showAlbu
                     variant="ghost"
                     size="icon"
                     className="h-6 w-6 hidden group-hover:flex items-center justify-center p-0"
-                    onClick={() => onPlayToggle(track.id)}
+                    onClick={() => onPlayToggle?.(track.id)}
                   >
                     {currentlyPlayingId === track.id ? (
                       <Pause className="h-3.5 w-3.5 text-white" />
@@ -150,7 +164,7 @@ export function LibraryList({ tracks, currentlyPlayingId, onPlayToggle, showAlbu
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
-                      <DropdownMenuItem onClick={() => onPlayToggle(track.id)}>
+                      <DropdownMenuItem onClick={() => onPlayToggle?.(track.id)}>
                         <Play className="h-4 w-4 mr-2" />
                         Play
                       </DropdownMenuItem>

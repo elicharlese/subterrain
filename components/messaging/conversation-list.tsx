@@ -10,7 +10,11 @@ import { useState } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 
-export function ConversationList() {
+interface ConversationListProps {
+  onSelectConversation?: (conversationId: string) => void
+}
+
+export function ConversationList({ onSelectConversation }: ConversationListProps) {
   const { conversations, activeConversation, setActiveConversation } = useMessaging()
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -21,6 +25,14 @@ export function ConversationList() {
         p.username.toLowerCase().includes(searchQuery.toLowerCase()),
     ),
   )
+
+  const handleSelect = (id: string) => {
+    if (onSelectConversation) {
+      onSelectConversation(id)
+    } else {
+      setActiveConversation(id)
+    }
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -48,7 +60,7 @@ export function ConversationList() {
                   className={`flex w-full items-start justify-start gap-3 px-4 py-3.5 text-left rounded-lg mb-1 ${
                     activeConversation === conversation.id ? "bg-muted" : ""
                   }`}
-                  onClick={() => setActiveConversation(conversation.id)}
+                  onClick={() => handleSelect(conversation.id)}
                 >
                   <div className="relative">
                     <Avatar>

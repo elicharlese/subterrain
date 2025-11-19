@@ -1,15 +1,9 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import { MusicProvider, Track } from "@/types/music-providers"
 
-export type PlaylistTrack = {
-  id: number
-  title: string
-  artist: string
-  image: string
-  duration: string
-  audioUrl: string
-}
+export type PlaylistTrack = Track
 
 export type Playlist = {
   id: string
@@ -29,14 +23,18 @@ export type Playlist = {
 type PlaylistContextType = {
   playlists: Playlist[]
   activePlaylist: Playlist | null
+  selectedProvider: MusicProvider
+  currentTrack: Track | null
   createPlaylist: (name: string, description?: string) => void
   deletePlaylist: (id: string) => void
   renamePlaylist: (id: string, name: string) => void
   updatePlaylistDescription: (id: string, description: string) => void
   updatePlaylistCover: (id: string, coverImage: string) => void
   addTrackToPlaylist: (playlistId: string, track: PlaylistTrack) => void
-  removeTrackFromPlaylist: (playlistId: string, trackId: number) => void
+  removeTrackFromPlaylist: (playlistId: string, trackId: string) => void
   setActivePlaylist: (id: string | null) => void
+  setSelectedProvider: (provider: MusicProvider) => void
+  setCurrentTrack: (track: Track | null) => void
   createSmartPlaylist: (
     name: string,
     rules: { type: "genre" | "artist" | "recent" | "mostPlayed"; value: string }[],
@@ -48,6 +46,8 @@ const PlaylistContext = createContext<PlaylistContextType | undefined>(undefined
 export function PlaylistProvider({ children }: { children: ReactNode }) {
   const [playlists, setPlaylists] = useState<Playlist[]>([])
   const [activePlaylist, setActivePlaylist] = useState<Playlist | null>(null)
+  const [selectedProvider, setSelectedProvider] = useState<MusicProvider>('apple')
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(null)
 
   // Load playlists from localStorage on initial render
   useEffect(() => {
@@ -74,6 +74,117 @@ export function PlaylistProvider({ children }: { children: ReactNode }) {
           createdAt: new Date(),
           updatedAt: new Date(),
           description: "My collection of favorite tracks",
+        },
+        {
+          id: "favorites-mix",
+          name: "Favorites Mix",
+          description: "Based on your listening history",
+          coverImage: "/abstract-purple-music-collage.png",
+          tracks: [
+            {
+              id: "1",
+              title: "Solana Sunrise",
+              artist: "You",
+              duration: 252,
+              provider: 'apple',
+              providerId: "1",
+              coverImage: "/abstract-music-visualizer-purple.png",
+            },
+            {
+              id: "2",
+              title: "Crypto Beats",
+              artist: "BlockchainDJ",
+              duration: 225,
+              provider: 'apple',
+              providerId: "2",
+              coverImage: "/electronic-purple-album-cover.png",
+            },
+            {
+              id: "3",
+              title: "Metaverse Melodies",
+              artist: "Virtual Vibes",
+              duration: 260,
+              provider: 'apple',
+              providerId: "3",
+              coverImage: "/futuristic-colorful-album-cover.png",
+            },
+          ],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: "discover-mix",
+          name: "Discover Mix",
+          description: "New artists we think you'll like",
+          coverImage: "/colorful-abstract-music-collage.png",
+          tracks: [
+            {
+              id: "4",
+              title: "Decentralized Dreams",
+              artist: "Web3 Wizard",
+              duration: 375,
+              provider: 'apple',
+              providerId: "4",
+              coverImage: "/abstract-digital-dream-album-cover.png",
+            },
+            {
+              id: "5",
+              title: "NFT Nights",
+              artist: "TokenTunes",
+              duration: 215,
+              provider: 'apple',
+              providerId: "5",
+              coverImage: "/night-city-neon-album-cover.png",
+            },
+            {
+              id: "6",
+              title: "Digital Dreamer",
+              artist: "Pixel Pioneers",
+              duration: 305,
+              provider: 'apple',
+              providerId: "6",
+              coverImage: "/dreamy-pixel-album-cover.png",
+            },
+          ],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: "chill-mix",
+          name: "Chill Mix",
+          description: "Relaxing music for your downtime",
+          coverImage: "/blue-purple-ambient-collage.png",
+          tracks: [
+            {
+              id: "7",
+              title: "Solana Sunset",
+              artist: "Blockchain Beats",
+              duration: 330,
+              provider: 'apple',
+              providerId: "7",
+              coverImage: "/placeholder-4wff0.png",
+            },
+            {
+              id: "8",
+              title: "Token Tunes",
+              artist: "Crypto Composer",
+              duration: 210,
+              provider: 'apple',
+              providerId: "8",
+              coverImage: "/placeholder-t1xso.png",
+            },
+            {
+              id: "9",
+              title: "Solana Soul",
+              artist: "Web3 Wizard",
+              duration: 285,
+              provider: 'apple',
+              providerId: "9",
+              coverImage: "/album-cover-soul-warm.png",
+            },
+          ],
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           id: "recently-added",
@@ -193,7 +304,7 @@ export function PlaylistProvider({ children }: { children: ReactNode }) {
     )
   }
 
-  const removeTrackFromPlaylist = (playlistId: string, trackId: number) => {
+  const removeTrackFromPlaylist = (playlistId: string, trackId: string) => {
     setPlaylists(
       playlists.map((playlist) => {
         if (playlist.id === playlistId) {
@@ -240,6 +351,8 @@ export function PlaylistProvider({ children }: { children: ReactNode }) {
       value={{
         playlists,
         activePlaylist,
+        selectedProvider,
+        currentTrack,
         createPlaylist,
         deletePlaylist,
         renamePlaylist,
@@ -248,6 +361,8 @@ export function PlaylistProvider({ children }: { children: ReactNode }) {
         addTrackToPlaylist,
         removeTrackFromPlaylist,
         setActivePlaylist: setActivePlaylistById,
+        setSelectedProvider,
+        setCurrentTrack,
         createSmartPlaylist,
       }}
     >

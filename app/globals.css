@@ -67,6 +67,32 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
+  a,
+  a:visited {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* Hide default vertical scrollbars globally while preserving scroll */
+  html,
+  body {
+    overflow-y: auto;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
+
+  html {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
   /* Apply custom fonts */
   h1,
   h2,

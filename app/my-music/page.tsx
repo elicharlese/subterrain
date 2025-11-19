@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Upload } from "lucide-react"
-import MusicAppLayout from "@/components/music-app-layout"
+import { MusicAppLayout } from "@/components/music-app-layout"
 import { ApplePlayer } from "@/components/apple-player"
 import { AlbumGrid } from "@/components/album-grid"
 

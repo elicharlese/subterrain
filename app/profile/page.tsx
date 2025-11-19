@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { FileMusic, Users, Music, Calendar, Twitter, Instagram, Globe } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import MusicAppLayout from "@/components/music-app-layout"
+import { MusicAppLayout } from "@/components/music-app-layout"
 import { AlbumGrid } from "@/components/album-grid"
 import { LibraryList } from "@/components/library-list"
 import { ShareButton } from "@/components/sharing/share-button"
@@ -51,9 +51,9 @@ export default function ProfilePage() {
 
   return (
     <MusicAppLayout>
-      <div className="relative">
+      <div className="relative h-full overflow-y-auto scrollbar-hide">
         {/* Cover Image */}
-        <div className="relative h-64 w-full overflow-hidden">
+        <div className="relative h-64 w-full overflow-hidden rounded-r-3xl border-t border-l border-zinc-800/80">
           <Image
             src={userProfile.coverImageUrl || "/placeholder.svg"}
             alt="Profile cover"

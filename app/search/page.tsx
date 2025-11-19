@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import MusicAppLayout from "@/components/music-app-layout"
+import { MusicAppLayout } from "@/components/music-app-layout"
 import { SearchInput } from "@/components/search-input"
 import { SearchResults } from "@/components/search-results"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -94,7 +94,7 @@ export default function SearchPage() {
   return (
     <MusicAppLayout>
       <div className="flex flex-col h-full">
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1">
           <div className="p-6">
             <h1 className="text-3xl font-bold mb-6">Search</h1>
 
@@ -107,7 +107,7 @@ export default function SearchPage() {
               autoFocus
             />
 
-            <ScrollArea className="h-[calc(100vh-200px)]">
+            <ScrollArea>
               {debouncedQuery ? (
                 <>
                   <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full">

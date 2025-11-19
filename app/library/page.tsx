@@ -1,8 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import MusicAppLayout from "@/components/music-app-layout"
-import { ApplePlayer } from "@/components/apple-player"
+import { MusicAppLayout } from "@/components/music-app-layout"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -11,7 +10,6 @@ import { AlbumGrid } from "@/components/album-grid"
 import { LibraryList } from "@/components/library-list"
 import { LibraryArtists } from "@/components/library-artists"
 import { usePlaylists } from "@/contexts/playlist-context"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 
 // Mock data for library music
@@ -198,7 +196,7 @@ export default function LibraryPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [sortBy, setSortBy] = useState<"recent" | "name" | "artist" | "plays">("recent")
-  const { playlists, createPlaylist } = usePlaylists()
+  const { playlists, createPlaylist, setCurrentTrack } = usePlaylists()
 
   // Filter music based on search
   const filteredMusic = libraryMusic.filter(
@@ -225,13 +223,26 @@ export default function LibraryPage() {
   const togglePlay = (id: number) => {
     if (currentlyPlaying === id) {
       setCurrentlyPlaying(null)
+      setCurrentTrack(null)
     } else {
       setCurrentlyPlaying(id)
+
+      const selected = libraryMusic.find((item) => item.id === id)
+
+      if (selected) {
+        setCurrentTrack({
+          id: String(selected.id),
+          title: selected.title,
+          artist: selected.artist,
+          duration: 0,
+          audioUrl: selected.audioUrl,
+          provider: "apple",
+          providerId: String(selected.id),
+          coverImage: selected.image,
+        })
+      }
     }
   }
-
-  // Get currently playing track
-  const currentTrack = currentlyPlaying ? libraryMusic.find((item) => item.id === currentlyPlaying) : null
 
   // Handle creating a new playlist
   const handleCreatePlaylist = () => {
@@ -241,9 +252,8 @@ export default function LibraryPage() {
 
   return (
     <MusicAppLayout>
-      <div className="flex flex-col h-full">
-        <div className="flex-1 overflow-hidden">
-          <div className="p-6">
+      <div className="flex flex-col min-h-full">
+        <div className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-3xl font-heading font-bold">Library</h1>
               <div className="flex items-center gap-3">
@@ -306,8 +316,7 @@ export default function LibraryPage() {
                 </TabsTrigger>
               </TabsList>
 
-              <ScrollArea className="h-[calc(100vh-240px)]">
-                <TabsContent value="recently-added" className="mt-0">
+              <TabsContent value="recently-added" className="mt-0">
                   {viewMode === "grid" ? (
                     <AlbumGrid
                       albums={sortedMusic.map((item) => ({
@@ -365,21 +374,9 @@ export default function LibraryPage() {
                 <TabsContent value="songs" className="mt-0">
                   <LibraryList tracks={sortedMusic} currentlyPlayingId={currentlyPlaying} onPlayToggle={togglePlay} />
                 </TabsContent>
-              </ScrollArea>
-            </Tabs>
+              </Tabs>
+            </div>
           </div>
-        </div>
-
-        {/* Apple Music style player */}
-        {currentTrack && (
-          <ApplePlayer
-            audioUrl={currentTrack.audioUrl}
-            title={currentTrack.title}
-            artist={currentTrack.artist}
-            coverImage={currentTrack.image}
-          />
-        )}
-      </div>
-    </MusicAppLayout>
+      </MusicAppLayout>
   )
 }

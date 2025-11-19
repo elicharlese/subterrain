@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Camera, Twitter, Instagram, Globe, DiscIcon as Discord } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import MusicAppLayout from "@/components/music-app-layout"
+import { MusicAppLayout } from "@/components/music-app-layout"
 
 export default function EditProfilePage() {
   const router = useRouter()

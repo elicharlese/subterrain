@@ -97,7 +97,7 @@ export function AlbumGridItem({
 }
 
 interface AlbumGridProps {
-  albums: {
+  albums?: {
     id: number
     title: string
     artist: string
@@ -105,13 +105,13 @@ interface AlbumGridProps {
     audioUrl: string
     isVerified?: boolean
   }[]
-  currentlyPlayingId: number | null
-  onPlayToggle: (id: number) => void
+  currentlyPlayingId?: number | null
+  onPlayToggle?: (id: number) => void
   title?: string
   className?: string
 }
 
-export function AlbumGrid({ albums, currentlyPlayingId, onPlayToggle, title, className }: AlbumGridProps) {
+export function AlbumGrid({ albums = [], currentlyPlayingId = null, onPlayToggle, title, className }: AlbumGridProps) {
   return (
     <div className={className}>
       {title && <h2 className="text-2xl font-heading font-bold mb-4">{title}</h2>}
@@ -125,7 +125,7 @@ export function AlbumGrid({ albums, currentlyPlayingId, onPlayToggle, title, cla
             image={album.image}
             isPlaying={currentlyPlayingId === album.id}
             isVerified={album.isVerified}
-            onPlayToggle={() => onPlayToggle(album.id)}
+            onPlayToggle={() => onPlayToggle?.(album.id)}
             audioUrl={album.audioUrl}
           />
         ))}

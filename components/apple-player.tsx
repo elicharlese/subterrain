@@ -116,11 +116,14 @@ export function ApplePlayer({ audioUrl, title, artist, coverImage }: ApplePlayer
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 w-full bg-zinc-900/90 backdrop-blur-md p-4 border-t border-zinc-800 shadow-lg">
+    <div className="fixed bottom-6 left-1/2 z-50 w-[min(960px,calc(100%-3rem))] -translate-x-1/2 rounded-full border border-white/10 bg-zinc-900/70 px-6 py-3 shadow-[0_18px_45px_rgba(0,0,0,0.9)] backdrop-blur-2xl flex items-center gap-6 overflow-hidden">
       <audio ref={audioRef} src={audioUrl} preload="metadata" />
 
+      {/* Glass highlight strip */}
+      <div className="pointer-events-none absolute inset-y-1 left-1/2 w-40 -translate-x-1/2 rounded-full bg-gradient-to-b from-white/35 via-white/10 to-transparent opacity-60" />
+
       {/* Now playing info */}
-      <div className="flex items-center w-1/4 min-w-[200px]">
+      <div className="relative z-10 flex items-center w-1/4 min-w-[200px]">
         <div className="relative h-14 w-14 rounded-md overflow-hidden mr-3 flex-shrink-0">
           <Image src={coverImage || "/placeholder.svg"} alt={title} fill className="object-cover" />
         </div>
@@ -131,7 +134,7 @@ export function ApplePlayer({ audioUrl, title, artist, coverImage }: ApplePlayer
       </div>
 
       {/* Player controls */}
-      <div className="flex-1 flex flex-col items-center justify-center max-w-2xl mx-auto">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-1">
           <Button
             variant="ghost"
@@ -180,7 +183,7 @@ export function ApplePlayer({ audioUrl, title, artist, coverImage }: ApplePlayer
       </div>
 
       {/* Volume controls */}
-      <div className="flex items-center gap-2 w-1/4 justify-end">
+      <div className="relative z-10 flex items-center gap-2 w-1/4 justify-end">
         <Button onClick={toggleMute} variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white">
           {isMuted || volume[0] === 0 ? (
             <VolumeX className="h-4 w-4" />

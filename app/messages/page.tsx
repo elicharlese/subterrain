@@ -1,14 +1,14 @@
 "use client"
 
 import { useMessaging } from "@/contexts/messaging-context"
-import MusicAppLayout from "@/components/music-app-layout"
+import { MusicAppLayout } from "@/components/music-app-layout"
 import { ConversationList } from "@/components/messaging/conversation-list"
 import { MessageList } from "@/components/messaging/message-list"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Info } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-mobile"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function MessagesPage() {
   const { conversations, activeConversation, setActiveConversation } = useMessaging()
@@ -17,6 +17,13 @@ export default function MessagesPage() {
 
   const activeConversationData = conversations.find((conv) => conv.id === activeConversation)
   const participant = activeConversationData?.participants[0]
+
+  // On desktop, auto-select the first conversation if none is active yet
+  useEffect(() => {
+    if (!isMobile && !activeConversation && conversations.length > 0) {
+      setActiveConversation(conversations[0].id)
+    }
+  }, [isMobile, activeConversation, conversations, setActiveConversation])
 
   const handleBackToList = () => {
     setShowMobileConversations(true)
@@ -31,17 +38,17 @@ export default function MessagesPage() {
 
   return (
     <MusicAppLayout>
-      <div className="flex h-full">
+      <div className="flex h-full min-h-0">
         {/* Conversation list - hidden on mobile when viewing a conversation */}
         {(!isMobile || showMobileConversations) && (
-          <div className={`${isMobile ? "w-full" : "w-80"} border-r`}>
-            <ConversationList />
+          <div className={`${isMobile ? "w-full" : "w-80"} border-r min-h-0`}>
+            <ConversationList onSelectConversation={handleSelectConversation} />
           </div>
         )}
 
         {/* Message area */}
         {(!isMobile || !showMobileConversations) && (
-          <div className="flex flex-1 flex-col">
+          <div className="flex flex-1 min-h-0 flex-col">
             {activeConversation && participant ? (
               <>
                 {/* Conversation header */}
@@ -65,7 +72,7 @@ export default function MessagesPage() {
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1">
+                <div className="flex-1 min-h-0">
                   <MessageList conversationId={activeConversation} />
                 </div>
               </>

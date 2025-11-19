@@ -3,8 +3,13 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import MusicAppLayout from "@/components/music-app-layout"
+import { MusicAppLayout } from "@/components/music-app-layout"
 import { ApplePlayer } from "@/components/apple-player"
+import { SpotifyPlayer } from "@/components/spotify-player"
+import { YouTubePlayer } from "@/components/youtube-player"
+import { TidalPlayer } from "@/components/tidal-player"
+import { SoundCloudPlayer } from "@/components/soundcloud-player"
+import { ProviderSelector } from "@/components/provider-selector"
 import { LibraryList } from "@/components/library-list"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,14 +18,15 @@ import { usePlaylists, type Playlist } from "@/contexts/playlist-context"
 import { Play, Shuffle, Edit, Check, X, Clock, Upload } from "lucide-react"
 import Image from "next/image"
 import { formatDistanceToNow } from "date-fns"
+import { MusicProvider, Track } from "@/types/music-providers"
 
 export default function PlaylistPage() {
   const params = useParams()
   const playlistId = params.id as string
-  const { playlists, updatePlaylistDescription, renamePlaylist, updatePlaylistCover } = usePlaylists()
+  const { playlists, updatePlaylistDescription, renamePlaylist, updatePlaylistCover, selectedProvider, setSelectedProvider } = usePlaylists()
 
   const [playlist, setPlaylist] = useState<Playlist | null>(null)
-  const [currentlyPlaying, setCurrentlyPlaying] = useState<number | null>(null)
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null)
   const [isEditingName, setIsEditingName] = useState(false)
   const [isEditingDescription, setIsEditingDescription] = useState(false)
   const [editName, setEditName] = useState("")
@@ -37,7 +43,7 @@ export default function PlaylistPage() {
     }
   }, [playlistId, playlists])
 
-  const togglePlay = (id: number) => {
+  const togglePlay = (id: string) => {
     if (currentlyPlaying === id) {
       setCurrentlyPlaying(null)
     } else {
@@ -72,6 +78,31 @@ export default function PlaylistPage() {
   const currentTrack =
     currentlyPlaying && playlist ? playlist.tracks.find((item) => item.id === currentlyPlaying) : null
 
+  const renderPlayer = () => {
+    if (!currentTrack) return null
+
+    switch (currentTrack.provider) {
+      case 'spotify':
+        return <SpotifyPlayer track={currentTrack} />
+      case 'youtube':
+        return <YouTubePlayer track={currentTrack} />
+      case 'tidal':
+        return <TidalPlayer track={currentTrack} />
+      case 'soundcloud':
+        return <SoundCloudPlayer track={currentTrack} />
+      case 'apple':
+      default:
+        return (
+          <ApplePlayer
+            audioUrl={currentTrack.audioUrl || ""}
+            title={currentTrack.title}
+            artist={currentTrack.artist}
+            coverImage={currentTrack.coverImage || ""}
+          />
+        )
+    }
+  }
+
   if (!playlist) {
     return (
       <MusicAppLayout>
@@ -87,6 +118,14 @@ export default function PlaylistPage() {
       <div className="flex flex-col h-full">
         <div className="flex-1 overflow-auto">
           <div className="p-6">
+            {/* Provider Selector */}
+            <div className="mb-6">
+              <ProviderSelector
+                currentProvider={selectedProvider}
+                onProviderChange={setSelectedProvider}
+              />
+            </div>
+
             <div className="flex flex-col md:flex-row gap-8 mb-8">
               {/* Playlist cover */}
               <div className="relative w-48 h-48 md:w-64 md:h-64 flex-shrink-0 group">
@@ -221,6 +260,8 @@ export default function PlaylistPage() {
                   genre: "",
                   created: new Date().toISOString(),
                   isVerified: false,
+                  image: track.coverImage || "",
+                  audioUrl: track.audioUrl || "",
                 }))}
                 currentlyPlayingId={currentlyPlaying}
                 onPlayToggle={togglePlay}
@@ -239,15 +280,8 @@ export default function PlaylistPage() {
           </div>
         </div>
 
-        {/* Apple Music style player */}
-        {currentTrack && (
-          <ApplePlayer
-            audioUrl={currentTrack.audioUrl}
-            title={currentTrack.title}
-            artist={currentTrack.artist}
-            coverImage={currentTrack.image}
-          />
-        )}
+        {/* Dynamic player based on provider */}
+        {renderPlayer()}
       </div>
     </MusicAppLayout>
   )

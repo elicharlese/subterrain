@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Slider } from "@/components/ui/slider"
 import { Upload, FileMusic, Music } from "lucide-react"
 import Image from "next/image"
-import MusicAppLayout from "@/components/music-app-layout"
+import { MusicAppLayout } from "@/components/music-app-layout"
 
 export default function MintPage() {
   const [coverImage, setCoverImage] = useState<string | null>(null)
